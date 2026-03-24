@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#FFCA9B"
+    android:animateLayoutChanges="true">
+
+    <!-- All Alerts Text with Full Width Underline -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:id="@+id/allAlertsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="All Alerts"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:gravity="center"
+            android:alpha="0"
+            android:scaleX="0.7"
+            android:scaleY="0.7" />
+
+        <!-- 🔴 FULL WIDTH UNDERLINE -->
+        <View
+            android:id="@+id/underlineView"
+            android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#C76327"
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="20dp"
+        android:alpha="0"/>
+
+    </LinearLayout>
+
+    <!-- Alerts List with Fade Animation -->
+    <ListView
+        android:id="@+id/alertsListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:dividerHeight="8dp"
+        android:divider="@android:color/transparent"
+        android:padding="4dp"
+        android:alpha="0"/>
+
+</LinearLayout>

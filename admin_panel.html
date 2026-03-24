@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>College Alert Admin Panel</title>
+    <!-- ✅ Firebase SDK - Compatible Version -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #e29e73 0%, #A0522D 100%);
+            min-height: 100vh;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #ee9862;  /* 🔴 Dark Orange */
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+        .container:hover {
+            transform: translateY(-5px);
+        }
+        h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            position: relative;
+        }
+        h2::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: #FFE0B2;
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+        .form-group {
+            margin-bottom: 5px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #FFE0B2;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        select, input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #FFCA9B;  /* 🔴 Light Orange */
+            color: #5a2e1a;
+            font-weight: 500;
+        }
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            background: #FFE0B2;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        select option {
+            background: #FFCA9B;
+            color: #5a2e1a;
+        }
+        input::placeholder, textarea::placeholder {
+            color: #d88965;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #FFE0B2;
+            color: #ef8b4d;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 20px 0 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(199, 99, 39, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            background: #FFF3E0;
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        
+        /* Connection Status - Only shown on error */
+        .status {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .status.error {
+            background: #f44336;
+            color: white;
+            display: block;
+        }
+        .message {
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+            font-weight: bold;
+            animation: fadeIn 0.3s ease;
+        }
+        .message.success {
+            background: #4CAF50;
+            color: white;
+            display: block;
+        }
+        .message.error {
+            background: #f44336;
+            color: white;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🎓 College Alert Admin</h2>
+        
+        <!-- Connection status - Only shown on error -->
+        <div id="status" class="status"></div>
+
+        <div class="form-group">
+            <label>📌 Event Type</label>
+            <select id="type">
+                <option value="Seminar">📚 Seminar</option>
+                <option value="Exam">📝 Exam</option>
+                <option value="Fest">🎉 Fest</option>
+                <option value="Notice">📢 Notice</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>📝 Title</label>
+            <input type="text" id="title" placeholder="Enter event title" required>
+        </div>
+
+        <div class="form-group">
+            <label>📋 Description</label>
+            <textarea id="desc" rows="3" placeholder="Enter event description"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>📅 Date</label>
+            <input type="date" id="date" required>
+        </div>
+
+        <div class="form-group">
+            <label>⏰ Time</label>
+            <input type="time" id="time" required>
+        </div>
+
+        <div class="form-group">
+            <label>📍 Venue</label>
+            <input type="text" id="venue" placeholder="Enter venue" required>
+        </div>
+
+        <button onclick="addEvent()">📢 Add Event</button>
+
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCz-bA-qgsfWrQ1AGbi4QEtF1z8czuX2hI",
+            authDomain: "collegealertapp-14384.firebaseapp.com",
+            databaseURL: "https://collegealertapp-14384-default-rtdb.firebaseio.com",
+            projectId: "collegealertapp-14384",
+            storageBucket: "collegealertapp-14384.appspot.com",
+            messagingSenderId: "855789881597",
+            appId: "1:855789881597:android:e5fd6a97826c9035931694"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
+        let isConnected = false;
+
+        // Connection check - Only show when disconnected
+        const connectedRef = database.ref('.info/connected');
+        connectedRef.on('value', (snap) => {
+            const statusDiv = document.getElementById('status');
+            if (snap.val() === true) {
+                isConnected = true;
+                // Hide status on successful connection
+                statusDiv.style.display = 'none';
+            } else {
+                isConnected = false;
+                // Show error only when disconnected
+                statusDiv.innerHTML = '❌ Connection Lost! Please check your internet and try again.';
+                statusDiv.className = 'status error';
+                statusDiv.style.display = 'block';
+            }
+        });
+
+        function showMessage(text, type) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.innerHTML = text;
+            msgDiv.className = 'message ' + type;
+            
+            setTimeout(() => {
+                msgDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function addEvent() {
+            // Check connection first
+            if (!isConnected) {
+                showMessage('❌ No internet connection! Please check your network.', 'error');
+                return;
+            }
+            
+            // Get date from input (format: YYYY-MM-DD)
+            const dateInput = document.getElementById('date').value;
+            
+            if (!dateInput) {
+                showMessage('❌ Please select a date!', 'error');
+                return;
+            }
+            
+            // Convert YYYY-MM-DD to YYYY/MM/DD for Firebase
+            const firebaseDate = dateInput.replace(/-/g, '/');
+            
+            const eventData = {
+                type: document.getElementById('type').value,
+                title: document.getElementById('title').value,
+                description: document.getElementById('desc').value,
+                date: firebaseDate,
+                time: document.getElementById('time').value,
+                venue: document.getElementById('venue').value,
+                timestamp: Date.now()
+            };
+            
+            // Validate
+            if (!eventData.title || !eventData.date || !eventData.time || !eventData.venue) {
+                showMessage('❌ Please fill all fields!', 'error');
+                return;
+            }
+            
+            // Show loading animation on button
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ Adding...';
+            btn.disabled = true;
+            
+            // Save to Firebase
+            database.ref('events').push(eventData)
+                .then(() => {
+                    showMessage('✅ Event added successfully!', 'success');
+                    
+                    // Clear form
+                    document.getElementById('title').value = '';
+                    document.getElementById('desc').value = '';
+                    document.getElementById('date').value = '';
+                    document.getElementById('time').value = '';
+                    document.getElementById('venue').value = '';
+                    
+                    // Reset button
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                })
+                .catch(error => {
+                    showMessage('❌ Error: ' + error.message, 'error');
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                });
+        }
+    </script>
+</body>
+</html>

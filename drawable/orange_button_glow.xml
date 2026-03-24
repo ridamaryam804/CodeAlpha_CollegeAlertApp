@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Button Hover/Focused State - Glow without click -->
+    <item android:state_focused="true">
+        <shape android:shape="oval">
+            <solid android:color="#FF8A65"/>  <!-- Light Orange with Glow -->
+            <corners android:radius="100dp"/>  <!-- 🔴 Zyada circle -->
+            <size android:width="200dp" android:height="60dp"/>
+            <stroke
+                android:width="4dp"
+                android:color="#FF5722"/>  <!-- Thick border for glow -->
+        </shape>
+    </item>
+
+    <!-- Button Pressed State -->
+    <item android:state_pressed="true">
+        <shape android:shape="oval">
+            <solid android:color="#F4511E"/>  <!-- Dark Orange -->
+            <corners android:radius="80dp"/>  <!-- 🔴 Zyada circle -->
+            <size android:width="200dp" android:height="60dp"/>
+            <stroke
+                android:width="3dp"
+                android:color="#BF360C"/>
+        </shape>
+    </item>
+
+    <!-- Normal State -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#FF9800"/>  <!-- Orange -->
+            <corners android:radius="100dp"/>  <!-- 🔴 Zyada circle -->
+            <size android:width="200dp" android:height="60dp"/>
+            <stroke
+                android:width="3dp"
+                android:color="#E65100"/>
+        </shape>
+    </item>
+
+</selector>
